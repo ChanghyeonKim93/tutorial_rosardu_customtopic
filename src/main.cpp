@@ -4,41 +4,45 @@
 #include <string>
 #include <sstream>
 
-#include "tutorial_rosardu_customtopic/resultStates.h" // server for 'GCS node'
+#include "tutorial_rosardu_customtopic/packetsToExcavator.h"   // custom messages
+#include "tutorial_rosardu_customtopic/packetsFromExcavator.h" // custom messages
 
 using namespace std;
 
-void callback(const tutorial_rosardu_customtopic::resultStatesConstPtr& msg){
-    for(unsigned int i = 0; i < 72; ++i){
-       // msg.bytes.push_back(i);
-    }
-    //msg.n_bytes = msg.bytes.size();
-}   
+void callbackFromExcavator(const tutorial_rosardu_customtopic::packetsFromExcavatorConstPtr& msg_from_ex){
+   int n_bytes = msg_from_ex->n_bytes;
+   cout << "subscriber callback ... n_bytes: " << n_bytes << "\n";
+
+   // Receiver... do it yourself...
+};
+
+
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "rosardu_communication");
     ros::NodeHandle nh("~");
-    // user input manual.
 
-    tutorial_rosardu_customtopic::resultStates msg_;
-    ros::Publisher pub = nh.advertise<tutorial_rosardu_customtopic::resultStates>("/ardu/msg",1);
+    // user input manual.
+    tutorial_rosardu_customtopic::packetsToExcavator   msg_to_ex;
+    ros::Publisher  pub_to_ex   = nh.advertise<tutorial_rosardu_customtopic::packetsToExcavator>  ("/adb", 1);
+
+    tutorial_rosardu_customtopic::packetsFromExcavator msg_from_ex;
+    ros::Subscriber sub_from_ex = nh.subscribe<tutorial_rosardu_customtopic::packetsFromExcavator>("/ardu/msg", 1, callbackFromExcavator);
 
     unsigned int cnt = 0;
     while(ros::ok()){
         ros::spinOnce();
-        ros::Duration(0.25).sleep();
+        ros::Duration(0.1).sleep();
 
-        msg_.n_bytes = 0;
-        msg_.bytes.clear();
-	msg_.bytes.push_back(cnt);
-        for(unsigned int i = 1; i < 71; ++i){
-           msg_.bytes.push_back(i);
+        msg_to_ex.n_bytes = 0;
+        msg_to_ex.bytes.clear();
+	msg_to_ex.bytes.push_back(cnt);
+        for(unsigned int i = 1; i < 72; ++i){
+           msg_to_ex.bytes.push_back(i);
         }
-        msg_.n_bytes = msg_.bytes.size();
+        msg_to_ex.n_bytes = msg_to_ex.bytes.size();
+	pub_to_ex.publish(msg_to_ex);
 
-	pub.publish(msg_);
-
-        cout << "cnt : " << cnt << "\n";
         ++cnt;
         if(cnt == 255) cnt = 0;
     }

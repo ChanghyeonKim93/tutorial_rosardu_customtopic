@@ -16,7 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  resultStates.msg
+  packetsToExcavator.msg
+  packetsFromExcavator.msg
 )
 
 ## Generate added messages and services with any dependencies listed here.
@@ -26,7 +27,7 @@ generate_messages(
 )
 
 catkin_package(
-	DEPENDS Eigen
+  DEPENDS Eigen
   CATKIN_DEPENDS message_runtime roscpp
 )
 
