@@ -1,4 +1,6 @@
 <launch>
+    <node pkg="tutorial_rosardu_customtopic" type="rosardu_communication" name="rosardu_communication" output"screen">
+    </node>
     <node pkg="rosserial_python" type="serial_node.py" name="arduino_TCPIP" args=" tcp" output="screen">
     </node>	   
 </launch>
